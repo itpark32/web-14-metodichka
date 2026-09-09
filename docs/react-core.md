@@ -1,0 +1,58 @@
+# React: JSX и компоненты
+
+<p class="reading-time">Чтение: 11 минут</p>
+
+> **Подтверждено проектами:** `lesson24` создан на React 19 и Vite, код разделен на `App`, `Items`, `ItemElement` и `Fieldset`.
+
+React описывает интерфейс как функцию от данных: `UI = f(state)`. При изменении props или state React снова вызывает компонент и согласует результат с DOM.
+
+## Компонент
+
+```jsx
+function ProductCard({ product, onAdd }) {
+  return (
+    <article>
+      <h2>{product.name}</h2>
+      <p>{product.price} ₽</p>
+      <button onClick={() => onAdd(product.id)}>В корзину</button>
+    </article>
+  );
+}
+```
+
+Правила:
+
+- имя компонента начинается с заглавной буквы;
+- компонент остается чистым во время рендера;
+- props читаются, но не изменяются;
+- данные идут вниз, события поднимаются вверх;
+- композиция компонентов обычно гибче наследования.
+
+## JSX
+
+JSX похож на HTML, но является синтаксисом JavaScript. Выражения помещаются в `{}`. Используются `className`, `htmlFor`, camelCase-события.
+
+```jsx
+const message = isReady ? <Result /> : <Loader />;
+
+const list = products.map((product) => (
+  <ProductCard key={product.id} product={product} />
+));
+```
+
+## Зачем нужен `key`
+
+`key` помогает React сопоставить старые и новые элементы списка. Он должен быть уникальным среди соседей и стабильным между рендерами. Индекс массива плох, если список сортируется, фильтруется или изменяется.
+
+## Классовые и функциональные компоненты
+
+Программа включает оба вида, но новый код обычно пишут функциональными компонентами с хуками. Классовые компоненты важно уметь читать: `state`, `setState`, `componentDidMount`, `componentDidUpdate`, `componentWillUnmount`.
+
+!!! warning "Частая ошибка"
+    Не вызывайте обработчик во время рендера: `onClick={save()}`. Передайте функцию: `onClick={save}` или `onClick={() => save(id)}`.
+
+## Мини-задача
+
+Разделите `Desserts` на компоненты `ProductList`, `ProductCard`, `Cart` и `OrderConfirmation`. Определите минимальные props для каждого.
+
+[Состояние и хуки](react-hooks.md){ .md-button .md-button--primary }

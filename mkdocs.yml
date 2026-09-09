@@ -1,0 +1,121 @@
+site_name: Методичка 14 потока
+site_description: "Полная методичка по веб-разработке для 14 потока: frontend, backend и подготовка к интервью"
+site_url: https://itpark32.github.io/web-14-metodichka/
+repo_name: itpark32/web-14-metodichka
+repo_url: https://github.com/itpark32/web-14-metodichka
+
+theme:
+  name: material
+  language: ru
+  font: false
+  icon:
+    logo: material/web
+    repo: fontawesome/brands/github
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-night
+        name: Включить темную тему
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-sunny
+        name: Включить светлую тему
+  features:
+    - navigation.indexes
+    - navigation.sections
+    - navigation.top
+    - navigation.tracking
+    - search.highlight
+    - search.share
+    - search.suggest
+    - content.code.copy
+    - content.code.select
+    - toc.follow
+
+plugins:
+  - search:
+      lang: ru
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - toc:
+      permalink: true
+
+extra_css:
+  - stylesheets/extra.css
+
+nav:
+  - Маршрут: index.md
+  - HTML и CSS:
+      - Структура HTML: html.md
+      - CSS и блочная модель: css.md
+      - Flexbox и Grid: layout.md
+      - Адаптивная верстка: responsive.md
+      - Доступность: accessibility.md
+      - БЭМ и SCSS: bem-scss.md
+  - Инструменты:
+      - Git и GitHub: git.md
+      - Сборка и качество кода: tooling.md
+  - JavaScript:
+      - Данные и условия: js-basics.md
+      - Циклы и алгоритмы: loops-algorithms.md
+      - Строки, массивы и объекты: collections.md
+      - Функции и область видимости: functions.md
+      - ООП, прототипы и this: oop.md
+      - Регулярные выражения: regex.md
+      - DOM: dom.md
+      - События и формы: events-forms.md
+      - Асинхронность и Fetch API: async-api.md
+      - Хранение, HTTP и REST: web-platform.md
+  - React:
+      - JSX и компоненты: react-core.md
+      - Состояние и хуки: react-hooks.md
+      - Роутинг и формы: react-routing-forms.md
+      - Redux Toolkit и Context: state-management.md
+      - API и серверное состояние: react-data.md
+  - TypeScript:
+      - Система типов: typescript.md
+  - Качество и архитектура:
+      - Тестирование: testing.md
+      - Производительность: performance.md
+      - Архитектура приложений: architecture.md
+  - Backend:
+      - PHP: php.md
+      - MySQL и SQL: sql.md
+      - Laravel: laravel.md
+      - Безопасность: security.md
+  - Работа в IT:
+      - Команда и процессы: career.md
+      - Резюме и портфолио: portfolio.md
+  - Практика:
+      - Проекты потока: projects.md
+      - Мини-задачи: practice.md
+  - Собеседование:
+      - Как готовиться: interview/index.md
+      - HTML и CSS: interview/html-css.md
+      - JavaScript и браузер: interview/javascript.md
+      - React: interview/react.md
+      - TypeScript и состояние: interview/typescript-state.md
+      - Тестирование и архитектура: interview/quality.md
+      - Backend: interview/backend.md
+      - Пробное интервью: interview/mock.md
+  - Карта программы: next.md
