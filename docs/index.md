@@ -24,6 +24,14 @@
 !!! tip "Тема повторена"
     Вы можете объяснить механизм, написать короткий пример и назвать частую ошибку. Узнать знакомое слово недостаточно.
 
+## Как читать отметки
+
+<div class="priority-grid">
+  <div class="priority-item priority-item--must"><strong>Нужно знать</strong>База для работы и частый вопрос на junior-интервью.</div>
+  <div class="priority-item priority-item--use"><strong>Часто в работе</strong>Полезный прием, который стоит узнавать и применять.</div>
+  <div class="priority-item priority-item--know"><strong>Достаточно узнавать</strong>Помните назначение, детали можно проверить в документации.</div>
+</div>
+
 ## Маршрут
 
 <div class="topic-grid">
