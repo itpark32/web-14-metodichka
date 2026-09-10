@@ -94,6 +94,37 @@
   color: var(--guide-ink);
 }
 
+.priority-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr;
+  gap: 0.75rem;
+  margin: 1rem 0 1.8rem;
+}
+
+.priority-item {
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--guide-line);
+  border-radius: 0.7rem;
+  background: var(--md-default-bg-color);
+}
+
+.priority-item strong {
+  display: block;
+  margin-bottom: 0.2rem;
+}
+
+.priority-item--must {
+  border-left: 0.24rem solid var(--md-accent-fg-color);
+}
+
+.priority-item--use {
+  border-left: 0.24rem solid var(--md-primary-fg-color);
+}
+
+.priority-item--know {
+  color: var(--md-default-fg-color--light);
+}
+
 .answer-pattern {
   padding: 1rem 1.1rem;
   border-left: 0.22rem solid var(--md-primary-fg-color);
@@ -128,6 +159,10 @@
   }
 
   .topic-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .priority-grid {
     grid-template-columns: 1fr;
   }
 

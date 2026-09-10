@@ -1,8 +1,13 @@
-# TypeScript: система типов
+# 37. TypeScript: система типов
 
-<p class="reading-time">Чтение: 15 минут</p>
+<p class="reading-time">Чтение: 12 минут</p>
 
 TypeScript проверяет типы до запуска и компилируется в JavaScript. Типы помогают выразить контракт, но не проверяют данные, пришедшие во время выполнения.
+
+!!! abstract "Фокус"
+    - **Нужно знать:** аннотации, type, interface, union, narrowing и generics.
+    - **Часто в работе:** utility types, типизация функций, DOM, API и React-компонентов.
+    - **Достаточно узнавать:** namespaces, enum и сложные conditional types.
 
 ## Базовые типы
 
@@ -72,17 +77,52 @@ Generic связывает типы между входом и выходом. �
 - `Record<K, V>` описывает словарь;
 - `ReturnType<F>` получает тип результата функции.
 
-## React
+## Пересечения, кортежи и enum
 
-```tsx
-type ButtonProps = {
-  children: React.ReactNode;
-  onClick: () => void;
-  disabled?: boolean;
-};
+```ts
+type Entity = { id: string };
+type Timestamped = { createdAt: string };
+type StoredProduct = Entity & Timestamped & Product;
+
+type Point = [x: number, y: number];
 ```
 
-Типизируйте props, события (`React.ChangeEvent<HTMLInputElement>`), ref и ответы API. Не используйте `React.FC` автоматически: обычная функция часто выражает контракт яснее.
+Intersection `A & B` требует выполнить оба контракта. Tuple фиксирует позиции и их типы. `enum` создает значение в JavaScript, поэтому для простого набора вариантов часто достаточно union строк: `"new" | "paid"`.
+
+## Классы и модификаторы доступа
+
+```ts
+abstract class Repository<T> {
+  abstract find(id: string): Promise<T | null>;
+}
+
+class ProductRepository extends Repository<Product> {
+  constructor(private readonly apiUrl: string) {
+    super();
+  }
+
+  async find(id: string): Promise<Product | null> {
+    // запрос и проверка ответа
+    return null;
+  }
+}
+```
+
+`public` доступен везде, `protected` внутри класса и наследников, `private` только внутри класса. Абстрактный класс нельзя создать напрямую, он задает общую основу и обязательные методы.
+
+## Модули и conditional types
+
+TypeScript использует стандартные `import` и `export`. Namespace встречается в старом или глобальном коде, но для современных приложений обычно выбирают ES Modules.
+
+Conditional type выбирает тип по условию:
+
+```ts
+type ApiResult<T> = T extends Error
+  ? { ok: false; error: T }
+  : { ok: true; data: T };
+```
+
+Сложный вычисляемый тип полезен только тогда, когда упрощает использование API. Если его трудно объяснить, явный union часто лучше.
 
 ## Проверка данных на границе
 
@@ -91,8 +131,12 @@ type ButtonProps = {
 !!! warning "Частая ошибка"
     Type assertion `as` говорит компилятору довериться разработчику. Оно не преобразует значение и может скрыть ошибку.
 
+## Как ответить на интервью
+
+> TypeScript статически проверяет контракты и затем компилируется в JavaScript. Union описывает набор допустимых вариантов, narrowing уточняет вариант проверкой, generic сохраняет связь между типами, а `unknown` требует проверки перед использованием. Внешние данные все равно валидируются во время выполнения.
+
 ## Мини-задача
 
 Типизируйте состояния GitHub User Finder как union, добавьте тип ответа API и функцию проверки минимально нужных полей.
 
-[Вопросы по TypeScript](interview/typescript-state.md){ .md-button }
+[Следующая тема: TypeScript в DOM, API и React](typescript-react.md){ .md-button }

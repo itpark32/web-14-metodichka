@@ -1,5 +1,5 @@
 site_name: Методичка 14 потока
-site_description: "Полная методичка по веб-разработке для 14 потока: frontend, backend и подготовка к интервью"
+site_description: Короткий маршрут повторения полной программы веб-разработки для 14 потока
 site_url: https://itpark32.github.io/web-14-metodichka/
 repo_name: itpark32/web-14-metodichka
 repo_url: https://github.com/itpark32/web-14-metodichka
@@ -65,57 +65,75 @@ extra_css:
 
 nav:
   - Маршрут: index.md
+  - Основы веба:
+      - Интернет, HTTP и браузер: web-basics.md
   - HTML и CSS:
       - Структура HTML: html.md
+      - Таблицы, списки и медиа: html-content.md
+      - Кнопки и формы: buttons-forms.md
+      - Доступность: accessibility.md
       - CSS и блочная модель: css.md
+      - Текст, фон и эффекты: visual-css.md
       - Flexbox и Grid: layout.md
       - Адаптивная верстка: responsive.md
-      - Доступность: accessibility.md
+      - Переходы и анимации: css-motion.md
+      - Bootstrap: bootstrap.md
       - БЭМ и SCSS: bem-scss.md
   - Инструменты:
+      - Figma и Pixel Perfect: figma-workflow.md
       - Git и GitHub: git.md
       - Сборка и качество кода: tooling.md
   - JavaScript:
       - Данные и условия: js-basics.md
+      - Числа и отладка: numbers-debugging.md
       - Циклы и алгоритмы: loops-algorithms.md
-      - Строки, массивы и объекты: collections.md
+      - Коллекции: collections.md
+      - Строки: strings.md
+      - Массивы: arrays.md
+      - Объекты: objects.md
       - Функции и область видимости: functions.md
-      - ООП, прототипы и this: oop.md
+      - Ошибки и исключения: errors.md
       - Регулярные выражения: regex.md
       - DOM: dom.md
       - События и формы: events-forms.md
+      - BOM и хранилища: bom-storage.md
       - Асинхронность и Fetch API: async-api.md
-      - Хранение, HTTP и REST: web-platform.md
+      - HTTP, REST API и Network: http-rest.md
+      - ООП, модули и SPA: oop-modules-spa.md
   - React:
       - JSX и компоненты: react-core.md
       - Состояние и хуки: react-hooks.md
-      - Роутинг и формы: react-routing-forms.md
-      - Redux Toolkit и Context: state-management.md
+      - Роутинг, формы и авторизация: react-routing-forms.md
+      - Context и Redux Toolkit: state-management.md
       - API и серверное состояние: react-data.md
   - TypeScript:
       - Система типов: typescript.md
+      - DOM, API и React: typescript-react.md
   - Качество и архитектура:
       - Тестирование: testing.md
       - Производительность: performance.md
       - Архитектура приложений: architecture.md
-  - Backend:
-      - PHP: php.md
-      - MySQL и SQL: sql.md
-      - Laravel: laravel.md
-      - Безопасность: security.md
   - Работа в IT:
       - Команда и процессы: career.md
       - Резюме и портфолио: portfolio.md
+  - Дополнительный backend:
+      - PHP: php.md
+      - PHP-архитектура и API: php-architecture.md
+      - MySQL и SQL: sql.md
+      - Laravel: laravel.md
+      - Безопасность: security.md
   - Практика:
       - Проекты потока: projects.md
       - Мини-задачи: practice.md
   - Собеседование:
       - Как готовиться: interview/index.md
       - HTML и CSS: interview/html-css.md
-      - JavaScript и браузер: interview/javascript.md
+      - JavaScript: interview/javascript.md
+      - Браузер, сеть и инструменты: interview/browser-tools.md
       - React: interview/react.md
       - TypeScript и состояние: interview/typescript-state.md
       - Тестирование и архитектура: interview/quality.md
+      - Работа в IT и HR: interview/career.md
       - Backend: interview/backend.md
       - Пробное интервью: interview/mock.md
-  - Карта программы: next.md
+  - Карта программы и границы: next.md
