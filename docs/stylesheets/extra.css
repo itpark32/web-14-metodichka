@@ -94,13 +94,6 @@
   color: var(--guide-ink);
 }
 
-.priority-grid {
-  display: grid;
-  grid-template-columns: 1.2fr 1fr 1fr;
-  gap: 0.75rem;
-  margin: 1rem 0 1.8rem;
-}
-
 .priority-item {
   padding: 0.9rem 1rem;
   border: 1px solid var(--guide-line);
@@ -159,10 +152,6 @@
   }
 
   .topic-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .priority-grid {
     grid-template-columns: 1fr;
   }
 
