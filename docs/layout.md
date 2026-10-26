@@ -1,4 +1,4 @@
-# 8. Flexbox и Grid
+# Flexbox и Grid
 
 <p class="reading-time">Чтение: 9 минут</p>
 

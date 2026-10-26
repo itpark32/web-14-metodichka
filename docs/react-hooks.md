@@ -1,4 +1,4 @@
-# 33. React: состояние и хуки
+# React: состояние и хуки
 
 <p class="reading-time">Чтение: 13 минут</p>
 
@@ -41,7 +41,9 @@ const total = cart.reduce((sum, item) => sum + item.price, 0);
 useEffect(() => {
   const controller = new AbortController();
 
-  loadProducts(controller.signal).then(setProducts).catch(handleError);
+  loadProducts(controller.signal).then(setProducts).catch(error => {
+    if (error.name !== "AbortError") setError(error);
+  });
 
   return () => controller.abort();
 }, []);
@@ -67,6 +69,84 @@ useEffect(() => {
 !!! warning "Частая ошибка"
     `useEffect` не нужен для вычисления данных из props и state или для обработки клика. Вычисляйте во время рендера, а действие выполняйте в обработчике.
 
+`loadProducts(signal)` здесь — API-функция, которая передает signal в Fetch и проверяет `response.ok`; `setProducts` и `setError` — setters состояний компонента. При отмене запрос отклоняется с `AbortError`: это ожидаемая очистка, а не ошибка интерфейса.
+
+### Как читать зависимости
+
+React сравнивает зависимости через `Object.is`. Cleanup прошлого эффекта выполняется перед повторной синхронизацией при изменении зависимостей и при удалении компонента. Без массива эффект идет после каждого commit; `[]` подходит, если реактивных зависимостей нет; `[userId]` связывает синхронизацию с пользователем. В Strict Mode разработческая проверка может выполнить дополнительный цикл setup → cleanup → setup: корректная очистка должна это выдерживать.
+
+Объект или функция, создаваемые в теле компонента, имеют новую ссылку на каждом render. Не отключайте правило линтера ради пустого массива: исправьте ответственность эффекта или перенесите создание объекта внутрь него.
+
+## Ref: доступ к DOM без нового render
+
+```jsx
+import { useRef } from "react";
+
+function SearchFocus() {
+  const inputRef = useRef(null);
+  return (
+    <>
+      <input ref={inputRef} aria-label="Поиск" />
+      <button onClick={() => inputRef.current?.focus()}>К поиску</button>
+    </>
+  );
+}
+```
+
+React запишет DOM-элемент в `current` после добавления в документ. Клик переведет фокус. Изменение ref не запускает render, поэтому ref не заменяет state для текста, который должен обновляться на экране.
+
+## Context и reducer
+
+`useContext` читает ближайший Provider, как показано в [главе о состоянии](state-management.md). `useReducer` полезен, когда несколько событий меняют один объект по понятным правилам:
+
+```jsx
+import { useReducer } from "react";
+
+function counterReducer(state, action) {
+  if (action.type === "increment") return { count: state.count + 1 };
+  if (action.type === "reset") return { count: 0 };
+  return state;
+}
+
+function Counter() {
+  const [state, dispatch] = useReducer(counterReducer, { count: 0 });
+  return <button onClick={() => dispatch({ type: "increment" })}>
+    Счет: {state.count}
+  </button>;
+}
+```
+
+На вход reducer приходят состояние и action, на выходе — следующее состояние. Один клик дает `count: 1`. Reducer остается чистым: запросы и таймеры выполняются вне него. Для одного простого числа `useState` обычно короче.
+
+## Custom hook
+
+```jsx
+import { useEffect } from "react";
+
+function useDocumentTitle(title) {
+  useEffect(() => {
+    const previousTitle = document.title;
+    document.title = title;
+    return () => { document.title = previousTitle; };
+  }, [title]);
+}
+// В компоненте страницы: useDocumentTitle("Каталог");
+```
+
+Хук принимает заголовок, синхронизирует браузерный документ и восстанавливает прежнее значение при очистке. Разместите его у владельца заголовка страницы: несколько одновременных владельцев могут конфликтовать. Пользовательский хук делит логику между вызовами, но каждый вызов получает собственные state/ref.
+
+## Когда useEffect не нужен
+
+Полное имя из имени и фамилии и отфильтрованный список вычисляются во время render. Отправка заказа запускается обработчиком submit. Перенос этих действий в effect добавляет лишние renders или повторные запросы.
+
+## Частые ошибки
+
+- Effect меняет свою зависимость без условия: возникает бесконечная цепочка.
+- Зависимость скрыта за `[]`: замыкание использует старое значение.
+- Вычисляемые данные копируются в state и рассинхронизируются.
+- Подписка или таймер остаются после ухода с экрана без cleanup.
+- Setter читает старый снимок: если следующий state зависит от предыдущего, используйте `setCount(current => current + 1)`.
+
 ## Как ответить на интервью
 
 > `useState` хранит данные интерфейса, а `useEffect` синхронизирует компонент с внешней системой после рендера. Зависимости перечисляют значения, от которых зависит эффект, а cleanup отменяет подписку или запрос. Хуки вызываются только на верхнем уровне компонента или другого хука.
@@ -74,5 +154,13 @@ useEffect(() => {
 ## Мини-задача
 
 Напишите `useLocalStorage(key, initialValue)`, который инициализирует значение, сохраняет изменения и корректно обрабатывает поврежденный JSON.
+
+## Проверьте себя
+
+1. Когда нужен functional update?
+2. В какие моменты React вызывает cleanup?
+3. Почему ref не обновляет текст на экране?
+4. Когда лучше reducer, а когда достаточно state?
+5. Почему фильтрации списка обычно не нужен effect?
 
 [Роутинг и формы](react-routing-forms.md){ .md-button }

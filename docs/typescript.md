@@ -1,4 +1,4 @@
-# 37. TypeScript: система типов
+# TypeScript: система типов
 
 <p class="reading-time">Чтение: 12 минут</p>
 
@@ -32,6 +32,7 @@ function total(products: Product[]): number {
 
 ```ts
 type RequestState<T> =
+  | { status: "idle" }
   | { status: "loading" }
   | { status: "success"; data: T }
   | { status: "error"; message: string };
@@ -59,14 +60,14 @@ function first<T>(items: T[]): T | undefined {
   return items[0];
 }
 
-async function getJson<T>(url: string): Promise<T> {
+async function getJson(url: string): Promise<unknown> {
   const response = await fetch(url);
   if (!response.ok) throw new Error(String(response.status));
   return response.json();
 }
 ```
 
-Generic связывает типы между входом и выходом. Он не заменяет конкретный тип, если связи нет.
+`first` связывает входной и выходной тип: для `first([1, 2])` результат имеет тип `number | undefined`. `getJson` намеренно возвращает `unknown`: generic `<T>` не мог бы проверить реальный ответ сети. Связь типов должна быть обоснована, а не обещана вызывающему коду.
 
 ## Utility types
 
@@ -131,12 +132,37 @@ type ApiResult<T> = T extends Error
 !!! warning "Частая ошибка"
     Type assertion `as` говорит компилятору довериться разработчику. Оно не преобразует значение и может скрыть ошибку.
 
+## Сужение unknown и практические типы
+
+```ts
+function printError(error: unknown): void {
+  if (error instanceof Error) console.error(error.message);
+  else console.error("Неизвестная ошибка");
+}
+
+type ProductDraft = Omit<Product, "id">;
+type ProductPatch = Partial<Pick<Product, "title" | "price">>;
+const patch: ProductPatch = { price: 500 };
+```
+
+Ошибка приходит как неизвестное значение; `instanceof` позволяет безопасно прочитать сообщение. Utility types повторно используют модель: черновик еще не имеет id, частичное изменение допускает только выбранные поля. Это помогает во время разработки, но сервер все равно валидирует PATCH.
+
+Дискриминант `status` в RequestState исключает сочетание «ошибка и успешные data одновременно». Сужение по `status === "success"` открывает data без assertion. `never` полезен для проверки исчерпанности вариантов в `switch`: при добавлении нового состояния компилятор покажет необработанную ветку.
+
 ## Как ответить на интервью
 
 > TypeScript статически проверяет контракты и затем компилируется в JavaScript. Union описывает набор допустимых вариантов, narrowing уточняет вариант проверкой, generic сохраняет связь между типами, а `unknown` требует проверки перед использованием. Внешние данные все равно валидируются во время выполнения.
 
 ## Мини-задача
 
-Типизируйте состояния GitHub User Finder как union, добавьте тип ответа API и функцию проверки минимально нужных полей.
+Типизируйте состояния приложения поиска пользователей как union, добавьте тип ответа API и функцию проверки минимально нужных полей.
+
+## Проверьте себя
+
+1. Когда удобнее interface, а когда type?
+2. Как narrowing открывает свойства union?
+3. Почему unknown безопаснее any на внешней границе?
+4. Как generic сохраняет связь входа и выхода?
+5. Почему Promise<User> не доказывает форму JSON?
 
 [Следующая тема: TypeScript в DOM, API и React](typescript-react.md){ .md-button }

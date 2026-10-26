@@ -1,4 +1,4 @@
-# 3. Таблицы, списки, SVG и мультимедиа
+# Таблицы, списки, SVG и мультимедиа
 
 <p class="reading-time">Чтение: 10 минут</p>
 
@@ -66,12 +66,23 @@
 
 Браузер выбирает первый поддерживаемый источник. Сам `img` остается обязательной запасной версией и носителем `alt`.
 
+Для разных размеров одного изображения используйте `srcset` и `sizes`:
+
+```html
+<img src="product-800.jpg"
+     srcset="product-400.jpg 400w, product-800.jpg 800w, product-1200.jpg 1200w"
+     sizes="(max-width: 600px) 100vw, 50vw"
+     alt="Механическая клавиатура" width="1200" height="800">
+```
+
+`sizes` описывает ожидаемую ширину картинки в макете. Браузер учитывает ее и плотность экрана, затем выбирает подходящий файл из `srcset`. Так телефон не скачивает заведомо слишком большую версию. Если размеры в `sizes` расходятся с CSS, выбор будет неточным.
+
 ## Видео и аудио
 
 ```html
 <video controls width="720" poster="poster.webp">
-  <source src="lesson.webm" type="video/webm">
-  <source src="lesson.mp4" type="video/mp4">
+  <source src="demo.webm" type="video/webm">
+  <source src="demo.mp4" type="video/mp4">
   <track kind="captions" src="captions-ru.vtt" srclang="ru" label="Русские субтитры">
   Ваш браузер не поддерживает видео.
 </video>

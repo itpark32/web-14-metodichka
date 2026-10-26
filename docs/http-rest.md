@@ -1,4 +1,4 @@
-# 30. HTTP, REST API и Network
+# HTTP, REST API и Network
 
 <p class="reading-time">Чтение: 10 минут</p>
 
@@ -54,7 +54,7 @@ await fetch("https://api.example.com/tasks", {
 - `4xx`: проблема запроса клиента;
 - `5xx`: ошибка сервера.
 
-Частые примеры: `200 OK`, `201 Created`, `204 No Content`, `400 Bad Request`, `401 Unauthorized`, `403 Forbidden`, `404 Not Found`, `500 Internal Server Error`.
+Частые примеры: `200 OK`, `201 Created`, `204 No Content`, `400 Bad Request`, `401 Unauthorized`, `403 Forbidden`, `404 Not Found`, `409 Conflict` (конфликт состояния), `422 Unprocessable Content` (неверные данные), `500 Internal Server Error`.
 
 У ответа `204` нет тела, поэтому не вызывайте для него `response.json()` без проверки.
 
@@ -98,6 +98,12 @@ controller.abort();
 
 !!! warning "Ловушка: 404 не отклоняет Fetch"
     Promise Fetch отклоняется при сетевой ошибке или отмене. Полученный HTTP-ответ 404 или 500 нужно проверить через `response.ok`.
+
+## Кто обращается и что ему разрешено
+
+Authentication (аутентификация) отвечает «кто пользователь?». Authorization (авторизация) — «что ему разрешено?». После установления личности сервер отдельно проверяет доступ к конкретному заказу или действию. Статус `401` обычно сообщает об отсутствии действительной аутентификации, `403` — об отказе в доступе.
+
+CORS регулирует чтение ответа браузерным JavaScript другого origin. Он не заменяет аутентификацию, авторизацию, CSRF protection или серверную валидацию: API доступен и другим HTTP-клиентам.
 
 ## Как ответить на интервью
 

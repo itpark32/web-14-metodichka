@@ -1,4 +1,4 @@
-# 29. Асинхронность и Fetch API
+# Асинхронность и Fetch API
 
 <p class="reading-time">Чтение: 9 минут</p>
 
@@ -65,12 +65,39 @@ async function loadProducts() {
 3. пустой результат;
 4. ошибка с возможностью повторить запрос.
 
-!!! warning "Ошибка из занятия"
+!!! warning "Частая ошибка"
     `return setTimeout(...)` не превращает результат callback в ожидаемое значение. Оберните таймер в `new Promise((resolve, reject) => ...)`, затем вызывайте `resolve` внутри callback.
 
-## Где это было
+## Отмена устаревшего поиска
 
-Урок 27 показывает callback, Promise, `async`/`await` и Event Loop. Урок 28 выполняет Fetch-запрос и разбирает JSON.
+```js
+async function searchUsers(query, signal) {
+  const response = await fetch(`/api/users?q=${encodeURIComponent(query)}`, { signal });
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  return response.json();
+}
+
+const controller = new AbortController();
+searchUsers("Anna", controller.signal)
+  .then(users => console.log(users))
+  .catch(error => {
+    if (error.name !== "AbortError") console.error(error);
+  });
+controller.abort(); // например, пользователь уже изменил строку поиска
+```
+
+Функция принимает текст и сигнал, возвращает Promise списка пользователей. Отмена отклоняет Promise с `AbortError`, а не сообщает пользователю о поломке. Для следующего запроса создайте новый controller. Старый ответ не должен перезаписать новые результаты. До первого запроса интерфейс может находиться в состоянии `idle`.
+
+## Независимые запросы
+
+```js
+const [users, products] = await Promise.all([
+  fetch("/api/users").then(r => { if (!r.ok) throw new Error(String(r.status)); return r.json(); }),
+  fetch("/api/products").then(r => { if (!r.ok) throw new Error(String(r.status)); return r.json(); }),
+]);
+```
+
+Оба запроса запускаются без ожидания друг друга; результат сохраняет порядок входного массива. Если один Promise отклонится, весь `Promise.all` отклонится, но другой запрос автоматически не отменится. На вызывающем уровне нужен `try/catch`.
 
 ## Как ответить на интервью
 

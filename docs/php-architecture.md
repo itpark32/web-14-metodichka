@@ -1,4 +1,4 @@
-# 45. PHP: архитектура, Composer и API
+# PHP: архитектура, Composer и API
 
 <p class="reading-time">Чтение: 10 минут</p>
 
@@ -21,12 +21,25 @@ Controller преобразует HTTP-запрос в вызов сценари
 ## Namespace, автозагрузка и Composer
 
 ```php
+<?php
 namespace App\Catalog;
 
 final class ProductService {}
 ```
 
 Composer устанавливает пакеты и по правилу PSR-4 сопоставляет namespace с каталогом. После `composer install` приложение подключает `vendor/autoload.php`, поэтому классы не требуют цепочки ручных `require`.
+
+Для класса `App\Catalog\ProductService` в файле `src/Catalog/ProductService.php` задайте отображение в `composer.json`:
+
+```json
+{
+  "autoload": {
+    "psr-4": { "App\\": "src/" }
+  }
+}
+```
+
+Добавьте этот раздел к существующему manifest и выполните `composer dump-autoload` после изменения правил. Затем `require __DIR__ . '/vendor/autoload.php';` и `new App\Catalog\ProductService()` найдут класс без ручного подключения файла. Namespace отделяет имя класса от одноименных классов пакетов, PSR-4 связывает префикс с путем.
 
 ## URL и веб-сервер
 
@@ -45,6 +58,35 @@ echo json_encode([
 ```
 
 API возвращает согласованные статусы и структуру ошибок. PHP может обращаться к внешнему API через HTTP-клиент, но должен обрабатывать timeout, неверный статус и поврежденный ответ.
+
+## PDO: от подключения до результата
+
+```php
+$pdo = new PDO(
+    getenv('DB_DSN'), getenv('DB_USER'), getenv('DB_PASSWORD'),
+    [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC]
+);
+$stmt = $pdo->prepare('SELECT id, name, email FROM users WHERE email = :email');
+$stmt->execute(['email' => $email]);
+$user = $stmt->fetch();
+```
+
+Окружение должно содержать DSN, например `mysql:host=127.0.0.1;dbname=shop;charset=utf8mb4`, и учетные данные. `$email` — уже проверенная строка запроса. Результат — ассоциативный массив или `false`, если пользователь не найден. Repository переводит этот результат в согласованный контракт, например объект или null.
+
+Значения не конкатенируются в SQL: драйвер связывает их с placeholders. Параметры не подставляют имена таблиц и направление сортировки — такие варианты выбирайте из разрешенного списка. Подключение и выполнение могут выбросить исключение: логируйте детали, клиенту отдавайте безопасную ошибку 500.
+
+```php
+header('Content-Type: application/json; charset=utf-8');
+if ($user === false) {
+    http_response_code(404);
+    echo json_encode(['error' => 'Пользователь не найден']);
+} else {
+    echo json_encode(['data' => $user], JSON_THROW_ON_ERROR);
+}
+```
+
+Этот фрагмент иллюстрирует ответ после проверки прав доступа к пользователю. `200` возвращает data, `404` — отсутствие ресурса. Не отдавайте password hash и внутренние поля. Для создания ресурса обычно подходит `201`, для неверных данных — `422`. REST-контракт должен одинаково трактовать статусы на PHP и frontend. [Подготовленные запросы PDO](https://www.php.net/manual/en/pdo.prepared-statements.php).
 
 ## Парсинг и фоновые задачи
 
