@@ -36,7 +36,7 @@ Vite использует ES-модули для разработки. HMR (Hot 
 
 ## Что находится в package.json
 
-Ниже показан раздел `scripts` внутри созданного manifest, а не замена всего файла:
+Ниже показан раздел `scripts` проекта после добавления команды тестов, а не замена всего manifest:
 
 ```json
 {
@@ -44,7 +44,8 @@ Vite использует ES-модули для разработки. HMR (Hot 
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test:run": "vitest run"
   }
 }
 ```
@@ -100,6 +101,49 @@ Prettier форматирует код. ESLint ищет вероятные ош�
 
 Source maps связывают собранный код с исходниками, чтобы DevTools показывал знакомые строки. Husky может запускать проверки перед Git-операциями; это дополнительное удобство, а обязательные проверки должны выполняться и в CI.
 
+## Минимальный CI через GitHub Actions
+
+CI (Continuous Integration) автоматически выполняет общие проверки после изменений в репозитории. Так команда видит результат даже тогда, когда разработчик забыл запустить проверки локально.
+
+```text
+push / pull request → npm ci → lint → tests → production build
+```
+
+Workflow хранится в `.github/workflows`. Для frontend-проекта с командами из примера `package.json` создайте файл `.github/workflows/ci.yml`:
+
+```yaml
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run test:run
+      - run: npm run build
+```
+
+Workflow получает код, устанавливает Node.js, восстанавливает зависимости по lock-файлу через `npm ci`, затем запускает линтер, тесты и production build. В репозитории должен быть согласованный `package-lock.json`.
+
+Команда `test:run` в примере означает `vitest run`: настройте Vitest по [главе о тестировании](testing.md). В существующем проекте используйте фактическую CI-команду из `package.json`; например, для настроенного Vitest со script `test` подойдет `npm test -- --run`.
+
+```text
+локально → быстро проверяем во время разработки
+CI → повторяет обязательные проверки в одинаковом окружении для всей команды
+```
+
+CI помогает обнаружить сломанное изменение до объединения. Чтобы не допускать слияние при провале CI, результат проверки делают обязательным в правилах ветки. Deployment может быть следующим шагом pipeline, но здесь достаточно `lint + tests + build`. [Пример CI для Node.js в документации GitHub](https://docs.github.com/en/actions/tutorials/build-and-test-code/nodejs).
+
 ## Публикация и окружение
 
 ```text
@@ -117,11 +161,11 @@ source → npm ci → lint / tests → build → dist → hosting / server
 
 ## Как ответить на интервью
 
-> Node.js запускает инструменты, npm устанавливает пакеты и выполняет scripts. Vite предоставляет dev server с HMR и production build. Manifest описывает проект, lock-файл фиксирует версии, а результат сборки размещают на хостинге. ESLint проверяет код, Prettier форматирует.
+> Node.js запускает инструменты, npm устанавливает пакеты и выполняет scripts. Vite предоставляет dev server с HMR и production build. Manifest описывает проект, lock-файл фиксирует версии, а результат сборки размещают на хостинге. ESLint проверяет код, Prettier форматирует. CI автоматически повторяет обязательные проверки — `npm ci`, lint, tests и production build — после push или pull request.
 
 ## Мини-практика
 
-Создайте Vite-проект каталога, найдите scripts и обе группы зависимостей. Измените компонент, выполните lint и build, откройте preview. Объясните, какие файлы попадут в Git и какие — на хостинг.
+Создайте Vite-проект каталога, найдите scripts и обе группы зависимостей. Измените компонент, выполните lint и build, откройте preview. Объясните, какие файлы попадут в Git и какие — на хостинг. Создайте GitHub Actions workflow, который на push и pull request выполняет установку зависимостей, lint, tests и production build.
 
 ## Проверьте себя
 
@@ -130,6 +174,7 @@ source → npm ci → lint / tests → build → dist → hosting / server
 3. Почему `devDependencies` нужны при сборке production?
 4. Чем dev server отличается от результата build?
 5. Почему frontend-переменная окружения не может быть секретом?
+6. Зачем запускать lint, tests и build в CI, если разработчик уже запускал их локально?
 
 [Документация Vite](https://vite.dev/guide/) · [npm: package.json](https://docs.npmjs.com/cli/configuring-npm/package-json)
 
